@@ -1,0 +1,33 @@
+parameters:
+  - name: subscriptionId
+    displayName: Azure Subscription ID
+    type: string
+  - name: resourceGroupName
+    displayName: Resource Group Name
+    type: string
+
+trigger: none
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+  - stage: Infra
+    displayName: Infra
+    jobs:
+    - job: InfraFunctionApp
+      displayName: Infra Function App
+      steps:
+        - checkout: self
+        - task: AzureResourceManagerTemplateDeployment@3
+          inputs:
+            deploymentScope: 'Resource Group'
+            azureResourceManagerConnection: 'test-automatic'
+            subscriptionId: ${{ parameters.subscriptionId }}
+            action: 'Create Or Update Resource Group'
+            resourceGroupName: ${{ parameters.resourceGroupName }}
+            location: 'West Europe'
+            templateLocation: 'Linked artifact'
+            csmFile: $(System.DefaultWorkingDirectory)/infra/main.bicep
+            overrideParameters: -resourceNamePrefix ajtech
+            deploymentMode: 'Incremental'
