@@ -1,0 +1,42 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.002.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LocalFunctionProj", "LocalFunctionProj.csproj", "{CBF68F64-8FDD-41F0-8C42-5654C6351285}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "obj", "obj", "{25D1D5A6-4CC4-4016-9CAB-3F81348C04F5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Debug", "Debug", "{9F30CEF0-8491-4573-9244-27BEB826D157}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "net8.0", "net8.0", "{6196052C-4AE4-4DC4-8FE8-A50DA28666AE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkerExtensions", "obj\Debug\net8.0\WorkerExtensions\WorkerExtensions.csproj", "{EF270AAB-CFCD-40B3-B0BF-E6DBF0A7207B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CBF68F64-8FDD-41F0-8C42-5654C6351285}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBF68F64-8FDD-41F0-8C42-5654C6351285}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBF68F64-8FDD-41F0-8C42-5654C6351285}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBF68F64-8FDD-41F0-8C42-5654C6351285}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF270AAB-CFCD-40B3-B0BF-E6DBF0A7207B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF270AAB-CFCD-40B3-B0BF-E6DBF0A7207B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF270AAB-CFCD-40B3-B0BF-E6DBF0A7207B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF270AAB-CFCD-40B3-B0BF-E6DBF0A7207B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9F30CEF0-8491-4573-9244-27BEB826D157} = {25D1D5A6-4CC4-4016-9CAB-3F81348C04F5}
+		{6196052C-4AE4-4DC4-8FE8-A50DA28666AE} = {9F30CEF0-8491-4573-9244-27BEB826D157}
+		{EF270AAB-CFCD-40B3-B0BF-E6DBF0A7207B} = {6196052C-4AE4-4DC4-8FE8-A50DA28666AE}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BEB9E2EC-F88B-4F8F-A53C-3973661B35BC}
+	EndGlobalSection
+EndGlobal
