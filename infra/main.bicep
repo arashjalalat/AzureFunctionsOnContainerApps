@@ -89,7 +89,7 @@ resource azfunctionapp 'Microsoft.Web/sites@2022-09-01' = {
     siteConfig: {
       linuxFxVersion: 'DOCKER|${acrName}.azurecr.io/${dockerImage}'
       acrUseManagedIdentityCreds: true
-      acrUserManagedIdentityID: identity.properties.clientId
+      acrUserManagedIdentityID: identity.id
       appSettings: [
           {
             name: 'FUNCTIONS_EXTENSION_VERSION'
