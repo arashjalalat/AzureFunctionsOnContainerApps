@@ -56,40 +56,33 @@ resource environment 'Microsoft.App/managedEnvironments@2024-03-01' = {
   }
 }
 
-// Create managed identity
-resource identity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31'  = {
-  name: '${envResourceNamePrefix}-umi'
-  location: location
-}
+// // Create managed identity
+// resource identity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31'  = {
+//   name: '${envResourceNamePrefix}-umi'
+//   location: location
+// }
 
 // Assign AcrPull permission
 module roleAssignment 'acr-role-assignment.bicep' = {
   name: 'acr-role-assignment'
   params: {
-    principalId: identity.properties.principalId
+    principalId: azfunctionapp.identity.principalId
     registryName: acrName
   }
 }
 
 resource azfunctionapp 'Microsoft.Web/sites@2022-09-01' = {
-  dependsOn:[
-    roleAssignment
-  ]
   name: '${envResourceNamePrefix}-funcapp'
   location: location
   kind: 'functionapp,linux'
   identity: {
-    type: 'UserAssigned'
-    userAssignedIdentities: {
-      '${identity.id}': {}
-    }
+    type: 'SystemAssigned'
   }
   properties: {
     managedEnvironmentId: environment.id
     siteConfig: {
       linuxFxVersion: 'DOCKER|${acrName}.azurecr.io/${dockerImage}'
       acrUseManagedIdentityCreds: true
-      acrUserManagedIdentityID: identity.properties.clientId
       appSettings: [
           {
             name: 'FUNCTIONS_EXTENSION_VERSION'
