@@ -75,7 +75,7 @@ resource azfunctionapp 'Microsoft.Web/sites@2022-09-01' = {
   dependsOn:[
     roleAssignment
   ]
-  name: '${envResourceNamePrefix}-funcapp'
+  name: '${envResourceNamePrefix}-funcapp1'
   location: location
   kind: 'functionapp,linux'
   identity: {
