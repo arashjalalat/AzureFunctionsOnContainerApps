@@ -72,7 +72,9 @@ module roleAssignment 'acr-role-assignment.bicep' = {
 }
 
 resource azfunctionapp 'Microsoft.Web/sites@2022-09-01' = {
-  dependsOn: [identity]
+  dependsOn:[
+    roleAssignment
+  ]
   name: '${envResourceNamePrefix}-funcapp'
   location: location
   kind: 'functionapp,linux'
