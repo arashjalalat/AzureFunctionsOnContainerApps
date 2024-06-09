@@ -98,7 +98,7 @@ resource azfunctionapp 'Microsoft.Web/sites@2022-09-01' = {
           }
           {
             name: 'DOCKER_REGISTRY_SERVER_URL'
-            value: 'https://${acrName}.azurecr.io'
+            value: '${acrName}.azurecr.io'
           }
         ]
     }
