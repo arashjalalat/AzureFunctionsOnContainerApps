@@ -62,20 +62,12 @@ resource identity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' 
   location: location
 }
 
-// Reference existing ACR
-resource acr 'Microsoft.ContainerRegistry/registries@2023-07-01' existing = {
-  name: acrName
-}
-
-var acrPullRoleId = '7f951dda-4ed3-4680-a7ca-43fe172d538d'
-
-// Create role assignment
-resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(acr.id, acrPullRoleId, identity.id)
-  properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', acrPullRoleId)
-    principalId: identity.id
-    principalType: 'ServicePrincipal'
+// Assign AcrPull permission
+module roleAssignment 'acr-role-assignment.bicep' = {
+  name: 'acr-role-assignment'
+  params: {
+    principalId: identity.properties.principalId
+    registryName: acrName
   }
 }
 
