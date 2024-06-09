@@ -21,6 +21,27 @@ pool:
   vmImage: ubuntu-latest
 
 stages:
+
+  - stage: DeployApp
+    displayName: Deploy App
+    jobs:
+    - job: DeployFunctionApp
+      displayName: Deploy Function App
+      steps:
+        - checkout: self
+
+        - task: AzureCLI@2
+          displayName: BuildPush image
+          inputs:
+            azureSubscription: 'test-automatic'
+            scriptType: 'pscore'
+            scriptLocation: 'inlineScript'
+            inlineScript: |
+              az acr build `
+                -f $(System.DefaultWorkingDirectory)/src/Dockerfile `
+                -t ${{ parameters.dockerImageName }} `
+                -r ${{ parameters.acrName }} .
+
   - stage: Infra
     displayName: Infra
     jobs:
@@ -44,29 +65,29 @@ stages:
               -dockerImage ${{ parameters.dockerImageName }}
             deploymentMode: 'Incremental'
 
-  - stage: DeployApp
-    displayName: Deploy App
-    jobs:
-    - job: DeployFunctionApp
-      displayName: Deploy Function App
-      steps:
-        - checkout: self
+  # - stage: DeployApp
+  #   displayName: Deploy App
+  #   jobs:
+  #   - job: DeployFunctionApp
+  #     displayName: Deploy Function App
+  #     steps:
+  #       - checkout: self
 
-        - task: AzureCLI@2
-          displayName: BuildPush image
-          inputs:
-            azureSubscription: 'test-automatic'
-            scriptType: 'pscore'
-            scriptLocation: 'inlineScript'
-            inlineScript: |
-              az acr build `
-                -f $(System.DefaultWorkingDirectory)/src/Dockerfile `
-                -t ${{ parameters.dockerImageName }} `
-                -r ${{ parameters.acrName }} .
+  #       - task: AzureCLI@2
+  #         displayName: BuildPush image
+  #         inputs:
+  #           azureSubscription: 'test-automatic'
+  #           scriptType: 'pscore'
+  #           scriptLocation: 'inlineScript'
+  #           inlineScript: |
+  #             az acr build `
+  #               -f $(System.DefaultWorkingDirectory)/src/Dockerfile `
+  #               -t ${{ parameters.dockerImageName }} `
+  #               -r ${{ parameters.acrName }} .
 
-        - task: AzureFunctionAppContainer@1
-          displayName: Azure Function App on Container deploy
-          inputs:
-            azureSubscription: 'test-automatic'
-            appName: ${{ parameters.resourceNamePrefix }}-funcapp
-            imageName: ${{ parameters.acrName }}.azurecr.io/${{ parameters.dockerImageName }}:latest
+  #       - task: AzureFunctionAppContainer@1
+  #         displayName: Azure Function App on Container deploy
+  #         inputs:
+  #           azureSubscription: 'test-automatic'
+  #           appName: ${{ parameters.resourceNamePrefix }}-funcapp
+  #           imageName: ${{ parameters.acrName }}.azurecr.io/${{ parameters.dockerImageName }}:latest
