@@ -22,11 +22,11 @@ pool:
 
 stages:
 
-  - stage: DeployApp
-    displayName: Deploy App
+  - stage: BuildApp
+    displayName: Build App
     jobs:
-    - job: DeployFunctionApp
-      displayName: Deploy Function App
+    - job: BuildFunctionApp
+      displayName: Build Function App
       steps:
         - checkout: self
 
