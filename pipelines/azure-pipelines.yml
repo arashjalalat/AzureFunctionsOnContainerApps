@@ -40,7 +40,7 @@ stages:
               az acr build `
                 -f $(System.DefaultWorkingDirectory)/src/Dockerfile `
                 -t ${{ parameters.dockerImageName }} `
-                -r ${{ parameters.acrName }} .
+                -r ${{ parameters.acrName }} ./src
 
   - stage: Infra
     displayName: Infra
