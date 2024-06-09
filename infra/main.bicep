@@ -7,7 +7,7 @@ param dockerImage string
 var envResourceNamePrefix = toLower(resourceNamePrefix)
 
 
-resource azStorageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
+resource azStorageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   name: '${envResourceNamePrefix}storage'
   location: location
   kind: 'StorageV2'
@@ -17,7 +17,7 @@ resource azStorageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
 }
 var azStorageConnectionString = 'DefaultEndpointsProtocol=https;AccountName=${azStorageAccount.name};EndpointSuffix=${az.environment().suffixes.storage};AccountKey=${azStorageAccount.listKeys().keys[0].value}'
 
-resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
+resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
   name: '${envResourceNamePrefix}-la'
   location: location
   properties: any({
@@ -57,7 +57,7 @@ resource environment 'Microsoft.App/managedEnvironments@2024-03-01' = {
 }
 
 // Create managed identity
-resource identity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-07-31-preview'  = {
+resource identity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31'  = {
   name: '${envResourceNamePrefix}-umi'
   location: location
 }
@@ -79,7 +79,7 @@ resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   }
 }
 
-resource azfunctionapp 'Microsoft.Web/sites@2023-12-01' = {
+resource azfunctionapp 'Microsoft.Web/sites@2022-09-01' = {
   name: '${envResourceNamePrefix}-funcapp'
   location: location
   kind: 'functionapp,linux'
