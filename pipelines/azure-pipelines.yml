@@ -5,6 +5,15 @@ parameters:
   - name: resourceGroupName
     displayName: Resource Group Name
     type: string
+  - name: resourceNamePrefix
+    displayName: Prefix for Azure resources
+    type: string
+  - name: acrName
+    displayName: Name of ACR
+    type: string
+  - name: dockerImageName
+    displayName: Name of the Docker image
+    type: string
 
 trigger: none
 
@@ -12,8 +21,29 @@ pool:
   vmImage: ubuntu-latest
 
 stages:
-  - stage: Infra
-    displayName: Infra
+
+  - stage: BuildApp
+    displayName: Build App
+    jobs:
+    - job: BuildFunctionApp
+      displayName: Build Function App
+      steps:
+        - checkout: self
+
+        - task: AzureCLI@2
+          displayName: BuildPush image
+          inputs:
+            azureSubscription: 'test-automatic'
+            scriptType: 'pscore'
+            scriptLocation: 'inlineScript'
+            inlineScript: |
+              az acr build `
+                -f $(System.DefaultWorkingDirectory)/src/Dockerfile `
+                -t ${{ parameters.dockerImageName }} `
+                -r ${{ parameters.acrName }} ./src
+
+  - stage: DeployApp
+    displayName: Deploy App
     jobs:
     - job: InfraFunctionApp
       displayName: Infra Function App
@@ -29,5 +59,8 @@ stages:
             location: 'West Europe'
             templateLocation: 'Linked artifact'
             csmFile: $(System.DefaultWorkingDirectory)/infra/main.bicep
-            overrideParameters: -resourceNamePrefix ajtech
+            overrideParameters: >-
+              -resourceNamePrefix ${{ parameters.resourceNamePrefix }}
+              -acrName ${{ parameters.acrName }}
+              -dockerImage ${{ parameters.dockerImageName }}
             deploymentMode: 'Incremental'

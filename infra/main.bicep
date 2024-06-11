@@ -2,10 +2,12 @@ param location string = resourceGroup().location
 
 @description('Resource name prefix')
 param resourceNamePrefix string
+param acrName string
+param dockerImage string
 var envResourceNamePrefix = toLower(resourceNamePrefix)
 
 
-resource azStorageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
+resource azStorageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   name: '${envResourceNamePrefix}storage'
   location: location
   kind: 'StorageV2'
@@ -15,7 +17,7 @@ resource azStorageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
 }
 var azStorageConnectionString = 'DefaultEndpointsProtocol=https;AccountName=${azStorageAccount.name};EndpointSuffix=${az.environment().suffixes.storage};AccountKey=${azStorageAccount.listKeys().keys[0].value}'
 
-resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
+resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
   name: '${envResourceNamePrefix}-la'
   location: location
   properties: any({
@@ -53,29 +55,58 @@ resource environment 'Microsoft.App/managedEnvironments@2024-03-01' = {
     }
   }
 }
-  
 
-resource azfunctionapp 'Microsoft.Web/sites@2023-12-01' = {
-  name: '${envResourceNamePrefix}-funcapp'
+// Create managed identity
+resource identity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31'  = {
+  name: '${envResourceNamePrefix}-umi'
+  location: location
+}
+
+// Assign AcrPull permission
+module roleAssignment 'acr-role-assignment.bicep' = {
+  name: 'acr-role-assignment'
+  params: {
+    principalId: identity.properties.principalId
+    registryName: acrName
+  }
+}
+
+resource azfunctionapp 'Microsoft.Web/sites@2022-09-01' = {
+  dependsOn:[
+    roleAssignment
+  ]
+  name: '${envResourceNamePrefix}-funcapp1'
   location: location
   kind: 'functionapp,linux'
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${identity.id}': {}
+    }
+  }
   properties: {
     managedEnvironmentId: environment.id
     siteConfig: {
-      linuxFxVersion: 'Docker|mcr.microsoft.com/azure-functions/dotnet7-quickstart-demo:1.0'  
+      linuxFxVersion: 'DOCKER|${acrName}.azurecr.io/${dockerImage}'
+      acrUseManagedIdentityCreds: true
+      acrUserManagedIdentityID: identity.id
       appSettings: [
-        {
-          name: 'FUNCTIONS_EXTENSION_VERSION'
-          value: '~4'
-        }
-        {
-          name: 'AzureWebJobsStorage'
-          value: azStorageConnectionString
-        }
-        {
-          name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
-          value: appInsights.properties.ConnectionString
-        }
+          {
+            name: 'FUNCTIONS_EXTENSION_VERSION'
+            value: '~4'
+          }
+          {
+            name: 'AzureWebJobsStorage'
+            value: azStorageConnectionString
+          }
+          {
+            name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+            value: appInsights.properties.ConnectionString
+          }
+          {
+            name: 'DOCKER_REGISTRY_SERVER_URL'
+            value: '${acrName}.azurecr.io'
+          }
         ]
     }
   }
