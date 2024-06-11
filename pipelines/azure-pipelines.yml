@@ -42,8 +42,8 @@ stages:
                 -t ${{ parameters.dockerImageName }} `
                 -r ${{ parameters.acrName }} ./src
 
-  - stage: Infra
-    displayName: Infra
+  - stage: DeployApp
+    displayName: Deploy App
     jobs:
     - job: InfraFunctionApp
       displayName: Infra Function App
@@ -64,16 +64,3 @@ stages:
               -acrName ${{ parameters.acrName }}
               -dockerImage ${{ parameters.dockerImageName }}
             deploymentMode: 'Incremental'
-
-  - stage: DeployApp
-    displayName: Deploy App
-    jobs:
-    - job: DeployFunctionApp
-      displayName: Deploy Function App
-      steps:
-        - task: AzureFunctionAppContainer@1
-          displayName: Azure Function App on Container deploy
-          inputs:
-            azureSubscription: 'test-automatic'
-            appName: ${{ parameters.resourceNamePrefix }}-funcapp1
-            imageName: ${{ parameters.acrName }}.azurecr.io/${{ parameters.dockerImageName }}:latest
